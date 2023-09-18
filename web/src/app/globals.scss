@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "JetBrainsMono NFM";
+  src: url("/fonts/JetBrainsMonoNFM-Bold.woff2") format("woff2");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrainsMono NFM";
+  src: url("/fonts/JetBrainsMonoNFM-Italic.woff2") format("woff2");
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrainsMono NFM";
+  src: url("/fonts/JetBrainsMonoNFM-Regular.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrainsMono NFM";
+  src: url("/fonts/JetBrainsMonoNFM-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --primary-color: #1c1c1c;
+  --second-color: #3c3c3c;
+  --third-color: #5f5f5f;
+  --fifth-color: #848484;
+  --sixt-color: #ababab;
+  --sevent-color: #d4d4d4;
+  --last-color: #fff;
+  --custom-color: #b2452d;
+  --intense-color: #ff0000;
+
+  --default-p: 16rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+  }
+}
+
+@layer base {
+  body {
+    @apply text-[#fff];
+    @apply bg-[var(--primary-color)] h-[100vh] flex flex-col;
+
+    * {
+      font-family: "JetBrainsMono NFM";
+    }
+  }
+
+  header {
+    @apply bg-[var(--second-color)] max-h-[4rem] h-[4rem] border-b-4 border-b-[var(--custom-color)] px-[var(--default-p)];
+    @apply flex justify-between items-center;
+  }
+
+  main {
+    @apply px-[var(--default-p)];
+  }
+
+  nav {
+    ul {
+      @apply flex justify-between items-center gap-6;
+
+      li {
+        @apply text-5xl select-none;
+        list-style: none;
+        font-weight: bold;
+      }
+    }
+  }
+
+  a {
+    @apply cursor-pointer no-underline;
+  }
+}
+
+@layer components {
+  .custom-border-1 {
+    -webkit-text-stroke: 3px var(--custom-color);
+    font-weight: bold;
+  }
+
+  .custom-border-2 {
+    -webkit-text-stroke: 1.5px var(--custom-color);
+    font-weight: bold;
+  }
+
+  .custom-border-3 {
+    -webkit-text-stroke: 4px var(--custom-color);
+    font-weight: bold;
+  }
+}
