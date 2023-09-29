@@ -1,28 +1,69 @@
 "use client";
 
 import Image from "next/image";
-import useScroll from "@/utils/useScroll";
 import Overlay from "@/components/ui/Overlay";
 import Scoreboard from "@/components/ui/Scoreboard";
 
 import { useState, useEffect, ReactElement, useRef } from "react";
-import { Chip } from "@nextui-org/react";
+import { Chip, Spinner } from "@nextui-org/react";
 import { AnimatePresence } from "framer-motion";
 import Login from "@/components/ui/Login";
+import jwtDecode from "jwt-decode";
+import axios from "axios";
+import { api_base_url } from "@/utils/utils";
+import { Input } from "@nextui-org/react";
 
-function Logged() {
-  const soundOneRef = useRef();
+function Logged({ hasBegun }: any) {
   const soundTwoRef = useRef();
   const [sectionIndex, setSectionIndex] = useState(0);
-  const [hasBegun, setHasBegun] = useState(false);
+  const [sections, setSections] = useState([]);
+  const [challenges, setChallenges] = useState([]);
 
-  const sections = [
-    ["Intro", true],
-    ["Reversing Engineering", true],
-    ["Binary Exploitation", true],
-    ["Cryptography", false],
-    ["Web", false],
-  ];
+  console.log(localStorage.getItem("token"));
+
+  const fetchChallenges = (id) => {
+    axios
+      .get(api_base_url + "/v1/data/challenges/" + id, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      })
+      .then((res) => {
+        setChallenges(res.data);
+      });
+  };
+
+  useEffect(() => {
+    if (!hasBegun) return;
+
+    axios
+      .get(api_base_url + "/v1/data/sections", {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      })
+      .then((res) => {
+        let sectionsList = [];
+
+        for (let i = 0; i < res.data.length; i++) {
+          sectionsList.push([
+            res.data[i].name,
+            res.data[i].enabled,
+            res.data[i].id,
+          ]);
+        }
+
+        setSections(sectionsList);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!hasBegun) return;
+
+    if (sections.length) fetchChallenges(sections[sectionIndex][2]);
+  }, [sectionIndex, sections]);
+
+  console.log(challenges)
 
   const onSectionClick = (e: Event) => {
     let clickedId = parseInt(e.target.id);
@@ -49,8 +90,8 @@ function Logged() {
           muted={true}
         />
 
-        <div className="flex flex-col gap-6 text-4xl font-bold">
-          <h2>
+        <div className="flex flex-col gap-6 font-bold">
+          <h2 className="text-4xl">
             {sections.length ? (
               sections[sectionIndex][0]
             ) : (
@@ -89,6 +130,35 @@ function Logged() {
               </Chip>
             )}
           </div>
+
+          <ul className="flex flex-col gap-5">
+            {challenges.map((challenge, index) => (
+              <li key={index}>
+                <div className="bg-[var(--second-color)] rounded-sm flex flex-col gap-0">
+                  <div className="flex items-center justify-between bg-[var(--custom-color)] rounded-t-sm p-4">
+                    <div className="flex gap-2 items-center">
+                      <b className="text-xl">{challenge.name}</b>
+                      <b className="text-2xl opacity-60">󰉀</b>
+                      <b className="text-md opacity-60">
+                        {challenge.score} Points
+                      </b>
+                    </div>
+                    {challenge.solved ? (
+                      <div className="flex gap-4 items-center">
+                        <b className="text-xl">SOLVED</b>
+                        <b className="text-3xl"></b>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                  <div className="px-4 py-3">
+                    <p className="text-sm">{challenge.desc}</p>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </>
     );
@@ -101,12 +171,51 @@ function Logged() {
   );
 }
 
-function NotLogged() {
+function NotLogged({ time, hasBegun }: any) {
+  const [timeLeft, setTimeLeft] = useState([-1, 0, 0, 0]);
+  const [isIntervaled, setIsIntervaled] = useState(false);
+
+  useEffect(() => {
+    if (time == null || isIntervaled) return;
+
+    const repeatTime = () => {
+      if (hasBegun) {
+        setTimeLeft([-1, 0, 0, 0]);
+        return;
+      }
+
+      const curr_date = new Date();
+
+      const ctf_date = new Date(time);
+      const diff_date = ctf_date - curr_date;
+
+      setTimeLeft([
+        Math.floor(diff_date / (1000 * 60 * 60 * 24)),
+        Math.floor((diff_date / (1000 * 60 * 60)) % 24),
+        Math.floor((diff_date / 1000 / 60) % 60),
+        Math.floor((diff_date / 1000) % 60),
+      ]);
+    };
+
+    repeatTime();
+
+    setInterval(repeatTime, 1000);
+
+    setIsIntervaled(true);
+  }, [time]);
+
   return (
     <div className="flex flex-col gap-16 items-center">
       <h1 className="custom-border-3 text-9xl text-center">ACTF</h1>
 
-      <time>0h 0min 0sec until start</time>
+      {timeLeft[0] == -1 ? (
+        <span>CTF started!</span>
+      ) : (
+        <time>
+          {timeLeft[0]} days {timeLeft[1]} hours {timeLeft[2]} minutes{" "}
+          {timeLeft[3]} seconds until start
+        </time>
+      )}
 
       <p className="text-center">
         This is a private{" "}
@@ -168,21 +277,48 @@ function NotLogged() {
 
 export default function Home() {
   const [logged, setLogged] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [overlay, setOverlay] = useState<ReactElement<any, any>>();
-  const setScroll = useScroll();
+  const [time, setTime] = useState(null);
+  const [hasBegun, setHasBegun] = useState(false);
 
   useEffect(() => {
-    setScroll(overlay ? true : false);
-  }, [overlay]);
+    axios.get(api_base_url + "/v1/data/time").then((res) => {
+      setTime(parseInt(res.data));
+    });
+
+    const date = new Date();
+    setHasBegun(date.getTime() >= time);
+
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      const decodedToken = jwtDecode(token);
+
+      if (decodedToken.exp * 1000 > new Date().getTime()) {
+        setLogged(true);
+      }
+    }
+
+    if (loading) setLoading(false);
+  }, []);
 
   const switchOverlay = (new_overlay: ReactElement<any, any>) => {
     setOverlay(null);
     setOverlay(new_overlay);
   };
 
-  const onLogin = () => {};
+  const onAuthEvent = (token: string) => {
+    if (token == "") {
+      localStorage.setItem("token", "");
+      setLogged(false);
+      return;
+    }
 
-  const onLogOut = () => {};
+    localStorage.setItem("token", token);
+    setLogged(true);
+    setOverlay(null);
+  };
 
   return (
     <>
@@ -190,7 +326,9 @@ export default function Home() {
         <a className="custom-border-2 font-bold text-4xl">ACTF</a>
 
         <nav>
-          {logged ? (
+          {loading ? (
+            ""
+          ) : logged ? (
             <ul>
               <li>
                 <a
@@ -201,7 +339,14 @@ export default function Home() {
                 </a>
               </li>
               <li>
-                <a className="custom-border-2"></a>
+                <a
+                  className="custom-border-2"
+                  onClick={() => {
+                    onAuthEvent("");
+                  }}
+                >
+                  
+                </a>
               </li>
             </ul>
           ) : (
@@ -217,7 +362,9 @@ export default function Home() {
               <li>
                 <a
                   className="custom-border-2"
-                  onClick={() => switchOverlay(<Login />)}
+                  onClick={() =>
+                    switchOverlay(<Login onSuccess={onAuthEvent} />)
+                  }
                 >
                   
                 </a>
@@ -231,7 +378,17 @@ export default function Home() {
           logged ? "mt-6" : "flex items-center justify-center relative h-full"
         }
       >
-        {logged ? <Logged /> : <NotLogged />}
+        {loading ? (
+          <Spinner color="default" labelColor="foreground" size="lg" />
+        ) : (
+          <>
+            {logged ? (
+              <Logged hasBegun={hasBegun} />
+            ) : (
+              <NotLogged time={time} hasBegun={hasBegun} />
+            )}
+          </>
+        )}
       </main>
       <AnimatePresence>
         {overlay != null ? (

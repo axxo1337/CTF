@@ -4,7 +4,7 @@ services:
     image: postgres
     environment:
       - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=db
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=ctf
     ports:
       - "5432:5432"

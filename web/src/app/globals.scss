@@ -104,4 +104,11 @@
     -webkit-text-stroke: 4px var(--custom-color);
     font-weight: bold;
   }
+
+  .scoreboard {
+    th,
+    td {
+      padding: 15px;
+    }
+  }
 }
