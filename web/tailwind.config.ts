@@ -21,8 +21,23 @@ const config: Config = {
   plugins: [
     nextui({
       themes: {
+        light: {
+          colors: {
+            primary: {
+              DEFAULT: "#b2452d",
+              foreground: "#000000",
+            },
+            focus: "#b2452d",
+          },
+        },
         dark: {
-
+          colors: {
+            primary: {
+              DEFAULT: "#b2452d",
+              foreground: "#000000",
+            },
+            focus: "#b2452d",
+          },
         },
       },
     }),

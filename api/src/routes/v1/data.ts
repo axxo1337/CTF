@@ -45,7 +45,6 @@ async function User(req: FastifyRequest, rep: FastifyReply) {
   }
 }
 
-/* TODO ADD LATER */
 async function Scoreboard(req: FastifyRequest, rep: FastifyReply) {
   try {
     const users = await pool

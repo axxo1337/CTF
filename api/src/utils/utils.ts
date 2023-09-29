@@ -2,7 +2,7 @@ export const start_epoch = 1695947401000;
 
 export const max_chall_score = 500;
 export const min_chall_score = 50;
-export const max_base_score = max_chall_score - min_chall_score;
+export const max_base_score = 50;
 
 export const user_status_flags = {
   NONE: 0,

@@ -1,25 +1,22 @@
 "use client";
 
-import Image from "next/image";
 import Overlay from "@/components/ui/Overlay";
 import Scoreboard from "@/components/ui/Scoreboard";
 
-import { useState, useEffect, ReactElement, useRef } from "react";
-import { Chip, Spinner } from "@nextui-org/react";
-import { AnimatePresence } from "framer-motion";
+import axios from "axios";
 import Login from "@/components/ui/Login";
 import jwtDecode from "jwt-decode";
-import axios from "axios";
+import { useState, useEffect, ReactElement, useRef } from "react";
+import { Button, Chip, Spinner } from "@nextui-org/react";
+import { AnimatePresence } from "framer-motion";
 import { api_base_url } from "@/utils/utils";
-import { Input } from "@nextui-org/react";
+import Challenge from "@/components/ui/Challenge";
 
 function Logged({ hasBegun }: any) {
   const soundTwoRef = useRef();
   const [sectionIndex, setSectionIndex] = useState(0);
   const [sections, setSections] = useState([]);
   const [challenges, setChallenges] = useState([]);
-
-  console.log(localStorage.getItem("token"));
 
   const fetchChallenges = (id) => {
     axios
@@ -63,7 +60,17 @@ function Logged({ hasBegun }: any) {
     if (sections.length) fetchChallenges(sections[sectionIndex][2]);
   }, [sectionIndex, sections]);
 
-  console.log(challenges)
+  const onSend = (id: Number, flag: String) => {
+    axios
+      .get(api_base_url + "/v1/flag/validate?a=" + id + "&b=" + flag, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      })
+      .then((res) => {
+        console.log(res);
+      });
+  };
 
   const onSectionClick = (e: Event) => {
     let clickedId = parseInt(e.target.id);
@@ -133,29 +140,8 @@ function Logged({ hasBegun }: any) {
 
           <ul className="flex flex-col gap-5">
             {challenges.map((challenge, index) => (
-              <li key={index}>
-                <div className="bg-[var(--second-color)] rounded-sm flex flex-col gap-0">
-                  <div className="flex items-center justify-between bg-[var(--custom-color)] rounded-t-sm p-4">
-                    <div className="flex gap-2 items-center">
-                      <b className="text-xl">{challenge.name}</b>
-                      <b className="text-2xl opacity-60">󰉀</b>
-                      <b className="text-md opacity-60">
-                        {challenge.score} Points
-                      </b>
-                    </div>
-                    {challenge.solved ? (
-                      <div className="flex gap-4 items-center">
-                        <b className="text-xl">SOLVED</b>
-                        <b className="text-3xl"></b>
-                      </div>
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                  <div className="px-4 py-3">
-                    <p className="text-sm">{challenge.desc}</p>
-                  </div>
-                </div>
+              <li key={challenge.id}>
+                <Challenge {...challenge} onSend={onSend} />
               </li>
             ))}
           </ul>
