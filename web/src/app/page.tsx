@@ -165,15 +165,15 @@ function NotLogged({ time, hasBegun }: any) {
     if (time == null || isIntervaled) return;
 
     const repeatTime = () => {
-      if (hasBegun) {
-        setTimeLeft([-1, 0, 0, 0]);
-        return;
-      }
-
       const curr_date = new Date();
 
       const ctf_date = new Date(time);
       const diff_date = ctf_date - curr_date;
+
+      if (hasBegun) {
+        setTimeLeft([diff_date < 0 ? -2 : -1, 0, 0, 0]);
+        return;
+      }
 
       setTimeLeft([
         Math.floor(diff_date / (1000 * 60 * 60 * 24)),
@@ -196,6 +196,8 @@ function NotLogged({ time, hasBegun }: any) {
 
       {timeLeft[0] == -1 ? (
         <span>CTF started!</span>
+      ) : timeLeft[0] == -2 ? (
+        <span>CTF is over!</span>
       ) : (
         <time>
           {timeLeft[0]} days {timeLeft[1]} hours {timeLeft[2]} minutes{" "}
