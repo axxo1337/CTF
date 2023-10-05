@@ -11,7 +11,7 @@ import * as utils from "@/utils/utils";
 /* Check if flag good */
 async function Validate(req: FastifyRequest, rep: FastifyReply) {
   try {
-    if (!utils.IsCTFStarted()) return rep.status(418).send("CTF not started");
+    if (!utils.IsCTFStarted() || !utils.IsCTFOver()) return rep.status(418).send("CTF not started or over");
 
     let decoded = jwt.verify(req.headers.authorization, process.env.TOKEN_KEY);
 
