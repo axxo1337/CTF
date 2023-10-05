@@ -3,8 +3,8 @@ services:
   db:
     image: postgres
     environment:
-      - POSTGRES_USER=admin
+      - POSTGRES_USER=${DB_USER}
       - POSTGRES_HOST_AUTH_METHOD=trust
-      - POSTGRES_DB=ctf
+      - POSTGRES_DB=${DB_NAME}
     ports:
       - "5432:5432"
