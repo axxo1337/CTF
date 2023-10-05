@@ -9,6 +9,7 @@ yarn.lock
 .env.test.local
 .env.production.local
 .env.local
+next-env.d.ts
 
 .yarn/cache
 .yarn/unplugged
@@ -25,3 +26,5 @@ node_modules/
 \*.tsbuildinfo
 node_modules/
 jspm_packages/
+.next/
+out/
