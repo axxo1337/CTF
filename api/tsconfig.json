@@ -1,4 +1,5 @@
 {
+  "ts-node": { "esm": true },
   "compilerOptions": {
     "lib": ["ESNext"],
     "module": "esnext",
