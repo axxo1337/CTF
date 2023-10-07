@@ -8,7 +8,7 @@ A CTF platform I designed specifically for videos. It is intended to be small an
 
 ### Host
 
-Under `scripts/` you will find `start.sh`. On execution it runs the docker compose script and create the containers fro the Postgres DB, the API and the web aka next js app. The script does not automatically setup the tables of the database so you'll have to run the contents of the `setup-db.sql` file yourself. 
+Under `scripts/` you will find `start.sh`. On execution it runs the docker compose script and create the containers fro the Postgres DB, the API and the web aka next js app. The script does not automatically setup the tables of the database so you'll have to run the contents of the `init-db.sql` file yourself. 
 
 ### Environment file
 

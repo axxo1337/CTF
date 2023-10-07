@@ -168,7 +168,7 @@ function NotLogged({ time, hasBegun }: any) {
       const curr_date = new Date();
 
       const ctf_date = new Date(time);
-      const diff_date = ctf_date.getTime() - curr_date.getTime();
+      const diff_date = ctf_date.getDate() - curr_date.getDate();
 
       if (hasBegun) {
         setTimeLeft([diff_date < 0 ? -2 : -1, 0, 0, 0]);
@@ -277,6 +277,8 @@ export default function Home() {
 
     const date = new Date();
     setHasBegun(date.getTime() >= time);
+
+    console.log(date.getTime())
 
     const token = localStorage.getItem("token");
 

@@ -1,4 +1,4 @@
-export const start_epoch = 1695947401000;
+export const start_epoch = 1696964564000;
 
 export const max_chall_score = 500;
 export const min_chall_score = 50;
