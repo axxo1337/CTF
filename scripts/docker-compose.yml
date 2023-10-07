@@ -12,7 +12,7 @@ services:
     build:
       context: ../web
     ports:
-      - "3000:3000"
+      - "80:3000"
   api:
     build:
       context: ../api
