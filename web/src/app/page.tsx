@@ -13,7 +13,7 @@ import { api_base_url } from "@/utils/utils";
 import Challenge from "@/components/ui/Challenge";
 
 function Logged({ hasBegun }: any) {
-  const soundTwoRef = useRef();
+  const soundRef = useRef(null);
   const [sectionIndex, setSectionIndex] = useState(0);
   const [sections, setSections] = useState([]);
   const [challenges, setChallenges] = useState([]);
@@ -72,16 +72,16 @@ function Logged({ hasBegun }: any) {
       });
   };
 
-  const onSectionClick = (e: Event) => {
+  const onSectionClick = (e) => {
     let clickedId = parseInt(e.target.id);
 
     if (isNaN(clickedId)) clickedId = parseInt(e.target.parentElement.id);
 
     if (clickedId != sectionIndex) {
-      soundTwoRef.current.muted = false;
-      soundTwoRef.current.pause();
-      soundTwoRef.current.currentTime = 0;
-      soundTwoRef.current.play();
+      soundRef.current.muted = false;
+      soundRef.current.pause();
+      soundRef.current.currentTime = 0;
+      soundRef.current.play();
       setSectionIndex(clickedId);
     }
   };
@@ -90,7 +90,7 @@ function Logged({ hasBegun }: any) {
       <>
         <audio
           id="heartbeat"
-          ref={soundTwoRef}
+          ref={soundRef}
           src="/sounds/orb.ogg"
           preload="auto"
           autoPlay={true}
@@ -168,7 +168,7 @@ function NotLogged({ time, hasBegun }: any) {
       const curr_date = new Date();
 
       const ctf_date = new Date(time);
-      const diff_date = ctf_date - curr_date;
+      const diff_date = ctf_date.getTime() - curr_date.getTime();
 
       if (hasBegun) {
         setTimeLeft([diff_date < 0 ? -2 : -1, 0, 0, 0]);
@@ -281,7 +281,7 @@ export default function Home() {
     const token = localStorage.getItem("token");
 
     if (token) {
-      const decodedToken = jwtDecode(token);
+      const decodedToken: {exp: number} = jwtDecode(token);
 
       if (decodedToken.exp * 1000 > new Date().getTime()) {
         setLogged(true);

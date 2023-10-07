@@ -24,15 +24,16 @@ async function Signin(req: FastifyRequest, rep: FastifyReply) {
     if (Regexs.password.match(password) != null) return rep.status(400).send();
 
     const user = await pool
-      .query({ text: "SELECT * FROM users WHERE name=$1", values: [username] })
+      .query({
+        text: "SELECT * FROM users WHERE name=$1 AND password=crypt($2, password)",
+        values: [username, password],
+      })
       .then((res) => {
         return res.rows[0];
       });
 
-    // Check if user was found then check passwords match
+    // Check if user was found(thus passwords match)
     if (!user) return rep.status(400).send();
-    if ((await Bun.password.verify(password, user.password)) == false)
-      return rep.status(400).send();
 
     rep.status(200).send(
       jwt.sign(
@@ -74,11 +75,8 @@ async function Signup(req: FastifyRequest, rep: FastifyReply) {
     /* Create user */
     await pool
       .query({
-        text: "INSERT INTO users (name, password) VALUES ($1, $2)",
-        values: [
-          username,
-          await Bun.password.hash(password, { algorithm: "bcrypt", cost: 4 }),
-        ],
+        text: "INSERT INTO users (name, password) VALUES ($1, crypt($2, gen_salt('bf', 4)))",
+        values: [username, password],
       })
       .then((res) => {
         return res.rows[0];

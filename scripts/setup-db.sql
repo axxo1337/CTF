@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- public.users definition
 -- DROP TABLE public.users;
 
