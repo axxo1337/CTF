@@ -28,3 +28,4 @@ node_modules/
 jspm_packages/
 .next/
 out/
+.vscode/
