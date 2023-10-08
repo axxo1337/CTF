@@ -1,5 +1,9 @@
 # CTF
 
+<p align="center">
+    <img src="repo/home.png" />
+</p>
+
 ## What is this?
 
 A CTF platform I designed specifically for videos. It is intended to be small and simple, and there are most likely much better alternatives out there. I do not recommend using it. Maybe some of you will find vulnerabilities in it lol. Be aware that it is still under development.
@@ -8,11 +12,12 @@ A CTF platform I designed specifically for videos. It is intended to be small an
 
 ### Host
 
-Under `scripts/` you will find `start.sh`. On execution it runs the docker compose script and create the containers fro the Postgres DB, the API and the web aka next js app. The script does not automatically setup the tables of the database so you'll have to run the contents of the `init-db.sql` file yourself. 
+Under `scripts/` you will find `start.sh`. On execution it runs the docker compose script and create the containers fro the Postgres DB, the API and the web aka next js app. The script does not automatically setup the tables of the database so you'll have to run the contents of the `init-db.sql` file yourself.
 
 ### Environment file
 
 The `.env` file must be placed under `api/`, and is used with the docker compose script and the API. It must contain the following varriables:
+
 - `DB_USER` -> The default user for the DB
 - `DB_PASSWORD` -> UNUSED FOR NOW
 - `DB_HOST` -> The IP of the DB (Should be localhost)
@@ -21,6 +26,7 @@ The `.env` file must be placed under `api/`, and is used with the docker compose
 - `SECRET_KEY` -> The secret key for specific API authentification (Like to signup users)
 
 Example environment file:
+
 ```
 DB_USER=YOUR_DB_USER
 DB_PASSWORD=
